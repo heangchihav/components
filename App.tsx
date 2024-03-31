@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { View, TextInput, Button, TouchableOpacity, Text } from "react-native";
+import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
 
 interface Input {
   isbn: string;
   quantity: string;
 }
 
-function AddItems() {
+const AddItems: React.FC = () => {
   const [inputs, setInputs] = useState<Input[]>([{ isbn: "", quantity: "1" }]);
 
   const handleAddMore = () => {
@@ -29,8 +29,26 @@ function AddItems() {
     setInputs(newInputs);
   };
 
-  const handleSubmit = async () => {
-    console.log(inputs);
+  const handleSubmit = () => {
+    // Merge quantities for the same ISBN
+    const mergedInputs: Input[] = [];
+    const isbnMap: Record<string, number> = {};
+
+    for (const input of inputs) {
+      const { isbn, quantity } = input;
+      if (isbnMap[isbn]) {
+        isbnMap[isbn] += parseInt(quantity, 10);
+      } else {
+        isbnMap[isbn] = parseInt(quantity, 10);
+      }
+    }
+
+    for (const isbn in isbnMap) {
+      mergedInputs.push({ isbn, quantity: isbnMap[isbn].toString() });
+    }
+
+    // Handle form submission logic here (e.g., send data to a server)
+    console.log("Submitted inputs:", mergedInputs);
   };
 
   return (
@@ -58,6 +76,6 @@ function AddItems() {
       <Button title="Add" onPress={handleSubmit} />
     </View>
   );
-}
+};
 
 export default AddItems;
