@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, TouchableOpacity } from "react-native";
 
 interface Input {
-  isbn: string;
+  isbn?: string; // Optional ISBN field
   quantity: string;
 }
 
 const AddItems: React.FC = () => {
-  const [inputs, setInputs] = useState<Input[]>([{ isbn: "", quantity: "1" }]);
+  const [inputs, setInputs] = useState<Input[]>([{ quantity: "1" }]);
 
   const handleAddMore = () => {
-    setInputs([...inputs, { isbn: "", quantity: "1" }]);
+    setInputs([...inputs, { quantity: "1" }]);
   };
 
   const handleInputChange = (
@@ -30,16 +30,19 @@ const AddItems: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Merge quantities for the same ISBN
+    // Merge quantities for the same ISBN (if provided)
     const mergedInputs: Input[] = [];
     const isbnMap: Record<string, number> = {};
 
     for (const input of inputs) {
       const { isbn, quantity } = input;
-      if (isbnMap[isbn]) {
-        isbnMap[isbn] += parseInt(quantity, 10);
-      } else {
-        isbnMap[isbn] = parseInt(quantity, 10);
+      if (isbn) {
+        // Only consider inputs with a valid ISBN
+        if (isbnMap[isbn]) {
+          isbnMap[isbn] += parseInt(quantity, 10);
+        } else {
+          isbnMap[isbn] = parseInt(quantity, 10);
+        }
       }
     }
 
